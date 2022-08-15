@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
   private lateinit var binding: ActivityMainBinding
   private val permissionCode = 1
   private var noOfCopies: Int = 1
-  private var enableBtButton: Boolean = true
 
   @SuppressLint("HardwareIds")
   @RequiresApi(VERSION_CODES.S)
@@ -56,9 +55,6 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
     }
 
     binding.testButton.setOnClickListener {
-      val alertDialog = AlertDialog.Builder(this)
-      val view = layoutInflater.inflate(R.layout.edit_text_printer, null)
-      val et = view.findViewById<EditText>(R.id.no_of_copies)
       val bluetoothManager: BluetoothManager =
         applicationContext.getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
       val bluetoothAdapter: BluetoothAdapter = bluetoothManager.adapter
@@ -66,25 +62,32 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
         resultLauncher.launch(enableBtIntent)
       } else {
-        alertDialog
-            .setView(view)
-            .setTitle("No of Copies")
-            .setPositiveButton("Done") { _, _ ->
-              if (et.text.isNullOrEmpty() || et.text.toString().toInt() == 0) {
-                Toast.makeText(this, "Please provide valid copies", Toast.LENGTH_SHORT).show()
-              } else {
-                noOfCopies = et.text.toString().toInt()
-                val intent = Intent(applicationContext, PrinterActivity::class.java)
-                resultLauncher.launch(intent)
-              }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-              dialog.dismiss()
-            }
-            .setCancelable(false)
-            .show()
+        showPrintDialog()
       }
     }
+  }
+
+  private fun showPrintDialog() {
+    val alertDialog = AlertDialog.Builder(this)
+    val view = layoutInflater.inflate(R.layout.edit_text_printer, null)
+    val et = view.findViewById<EditText>(R.id.no_of_copies)
+    alertDialog
+        .setView(view)
+        .setTitle("No of Copies")
+        .setPositiveButton("Done") { _, _ ->
+          if (et.text.isNullOrEmpty() || et.text.toString().toInt() == 0) {
+            Toast.makeText(this, "Please provide valid copies", Toast.LENGTH_SHORT).show()
+          } else {
+            noOfCopies = et.text.toString().toInt()
+            val intent = Intent(applicationContext, PrinterActivity::class.java)
+            resultLauncher.launch(intent)
+          }
+        }
+        .setNegativeButton("Cancel") { dialog, _ ->
+          dialog.dismiss()
+        }
+        .setCancelable(false)
+        .show()
   }
 
   private var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
