@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.lazymohan.zebratest.PinterDelegate.EnablePrintButton
 import com.lazymohan.zebratest.databinding.ActivityMainBinding
 import com.zebra.sdk.comm.BluetoothConnection
 import com.zebra.sdk.comm.Connection
@@ -31,11 +32,12 @@ import com.zebra.sdk.printer.ZebraPrinterFactory
 import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException
 import com.zebra.sdk.printer.ZebraPrinterLinkOs
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), EnablePrintButton {
 
   private lateinit var binding: ActivityMainBinding
   private val permissionCode = 1
   private var noOfCopies: Int = 1
+  private var enableBtButton: Boolean = true
 
   @SuppressLint("HardwareIds")
   @RequiresApi(VERSION_CODES.S)
@@ -90,21 +92,16 @@ class MainActivity : AppCompatActivity() {
       val address = result.data?.getStringExtra("macAddress")
       Thread {
         kotlin.run {
-          enableTestButton(false)
           val printerDelegate = address?.let {
             PinterDelegate(
-                "# 0-003145", "Tubing, copper - 11-6 in dx - in wall", it, noOfCopies = noOfCopies, context = binding.root
+                "# 0-003145", "Tubing, copper - 11-6 in dx - in wall", it, noOfCopies = noOfCopies,
+                context = binding.root, this
             )
           }
           printerDelegate?.doConnectionTest()
         }
       }.start()
-      enableTestButton(true)
     }
-  }
-
-  private fun enableTestButton(enabled: Boolean) {
-    runOnUiThread { binding.testButton.isEnabled = enabled }
   }
 
   @RequiresApi(VERSION_CODES.S)
@@ -145,6 +142,12 @@ class MainActivity : AppCompatActivity() {
       } else {
         Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
       }
+    }
+  }
+
+  override fun printBtnEnabled(enabled: Boolean) {
+    runOnUiThread {
+      binding.testButton.isEnabled = enabled
     }
   }
 }

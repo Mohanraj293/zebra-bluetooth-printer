@@ -20,11 +20,13 @@ class PinterDelegate(
   private val description: String,
   private val macAddress: String,
   private val noOfCopies: Int,
-  private val context: View
+  private val context: View,
+  private val listener: EnablePrintButton
 ) {
   private lateinit var connection: Connection
   private var printer: ZebraPrinter? = null
   private fun connect(): ZebraPrinter? {
+    listener.printBtnEnabled(false)
     setStatus("Connecting...")
     try {
       connection = BluetoothConnection(macAddress)
@@ -78,6 +80,8 @@ class PinterDelegate(
       setStatus("Not Connected.")
     } catch (e: ConnectionException) {
       setStatus("COMM Error! Disconnected")
+    } finally {
+      listener.printBtnEnabled(true)
     }
   }
 
@@ -125,7 +129,7 @@ class PinterDelegate(
     }
   }
 
-  interface EnablePrintButton{
+  interface EnablePrintButton {
     fun printBtnEnabled(enabled: Boolean)
   }
 }
