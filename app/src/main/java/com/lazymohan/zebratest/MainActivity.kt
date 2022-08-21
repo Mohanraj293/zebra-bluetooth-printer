@@ -93,12 +93,12 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
   private var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
     if (result.resultCode == Activity.RESULT_OK) {
       val address = result.data?.getStringExtra("macAddress")
-      val copies: Int = result.data!!.getIntExtra("copies",1)
+      val copies: Int = result.data!!.getIntExtra("copies", 1)
       Thread {
         kotlin.run {
           val itemData = mutableListOf<PrintContentModel>()
           itemData.add(
-              PrintContentModel("# 0-003145", "Tubing, copper - 11-6 in dx - in wall",copies)
+              PrintContentModel("# 0-003145", "Tubing, copper - 11-6 in dx - in wall", copies)
           )
           itemData.add(
               PrintContentModel("# 0-003146", "Tubing, copper - 11-6 in dx - in wall123", copies)
