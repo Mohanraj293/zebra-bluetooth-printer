@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
 
   private lateinit var binding: ActivityMainBinding
   private val permissionCode = 1
-  private var noOfCopies: Int = 1
 
   @SuppressLint("HardwareIds")
   @RequiresApi(VERSION_CODES.S)
@@ -78,8 +77,9 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
           if (et.text.isNullOrEmpty() || et.text.toString().toInt() == 0) {
             Toast.makeText(this, "Please provide valid copies", Toast.LENGTH_SHORT).show()
           } else {
-            noOfCopies = et.text.toString().toInt()
+            val noOfCopies = et.text.toString().toInt()
             val intent = Intent(applicationContext, PrinterActivity::class.java)
+            intent.putExtra("copies", noOfCopies)
             resultLauncher.launch(intent)
           }
         }
@@ -93,11 +93,19 @@ class MainActivity : AppCompatActivity(), EnablePrintButton {
   private var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
     if (result.resultCode == Activity.RESULT_OK) {
       val address = result.data?.getStringExtra("macAddress")
+      val copies: Int = result.data!!.getIntExtra("copies",1)
       Thread {
         kotlin.run {
+          val itemData = mutableListOf<PrintContentModel>()
+          itemData.add(
+              PrintContentModel("# 0-003145", "Tubing, copper - 11-6 in dx - in wall",copies)
+          )
+          itemData.add(
+              PrintContentModel("# 0-003146", "Tubing, copper - 11-6 in dx - in wall123", copies)
+          )
           val printerDelegate = address?.let {
             PinterDelegate(
-                "# 0-003145", "Tubing, copper - 11-6 in dx - in wall", it, noOfCopies = noOfCopies,
+                itemData, it,
                 context = binding.root, this
             )
           }

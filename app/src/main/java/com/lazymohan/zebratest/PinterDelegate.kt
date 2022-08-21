@@ -16,10 +16,8 @@ import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException
 import com.zebra.sdk.printer.ZebraPrinterLinkOs
 
 class PinterDelegate(
-  private val itemNum: String,
-  private val description: String,
+  private val itemData: MutableList<PrintContentModel>,
   private val macAddress: String,
-  private val noOfCopies: Int,
   private val context: View,
   private val listener: EnablePrintButton
 ) {
@@ -58,7 +56,11 @@ class PinterDelegate(
     return zebraPrinter
   }
 
-  private fun getConfigLabel(): String {
+  private fun getConfigLabel(
+    itemNum: String,
+    description: String,
+    noOfCopies: Int
+  ): String {
     SGD.SET("device.language", "zpl", connection)
     return """
       ^XA
@@ -87,9 +89,10 @@ class PinterDelegate(
       val printerStatus: PrinterStatus = linkOsPrinter.currentStatus
 
       if (printerStatus.isReadyToPrint) {
-        val configLabel = getConfigLabel()
-        connection.write(configLabel.toByteArray())
-        setStatus("Sending Data")
+        itemData.forEach {
+          val configLabel = getConfigLabel(it.itemNum,it.description,it.noOfCopies)
+          connection.write(configLabel.toByteArray())
+        }
       } else if (printerStatus.isHeadOpen) {
         setStatus("Printer Head Open")
       } else if (printerStatus.isPaused) {

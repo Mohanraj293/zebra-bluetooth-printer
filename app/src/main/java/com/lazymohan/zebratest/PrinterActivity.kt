@@ -16,6 +16,7 @@ import com.lazymohan.zebratest.databinding.ActivityPrinterBinding
 class PrinterActivity : AppCompatActivity(), DeviceItemListener {
   private lateinit var binding: ActivityPrinterBinding
   private var pairedArrayList = mutableListOf<PairedDeviceModel>()
+  private var noOfCopies = 1
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -24,7 +25,7 @@ class PrinterActivity : AppCompatActivity(), DeviceItemListener {
     val bluetoothManager: BluetoothManager =
       applicationContext.getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
     val bluetoothAdapter = bluetoothManager.adapter
-
+    noOfCopies = intent.getIntExtra("copies",1)
     val pairedDevices = bluetoothAdapter.bondedDevices
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       if (ActivityCompat.checkSelfPermission(
@@ -54,6 +55,7 @@ class PrinterActivity : AppCompatActivity(), DeviceItemListener {
     val intent = Intent(this, MainActivity::class.java)
     intent.putExtra("friendlyName", model.friendlyName)
     intent.putExtra("macAddress", model.macAddress)
+    intent.putExtra("copies", noOfCopies)
     setResult(RESULT_OK, intent)
     finish()
   }
