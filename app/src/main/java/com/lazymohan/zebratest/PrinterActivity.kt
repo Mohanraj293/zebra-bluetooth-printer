@@ -46,12 +46,8 @@ class PrinterActivity : AppCompatActivity(), DeviceItemListener {
       }
     }
     binding.recyclerView.layoutManager = LinearLayoutManager(this)
-    if (pairedArrayList.isNotEmpty()) {
-      binding.recyclerView.adapter = PairedDeviceAdapter(pairedArrayList, this)
-      binding.recyclerView.visibility = View.VISIBLE
-    } else {
-      binding.recyclerView.visibility = View.GONE
-    }
+    binding.recyclerView.adapter = PairedDeviceAdapter(pairedArrayList, this)
+    binding.recyclerView.visibility = if (pairedArrayList.isNotEmpty()) View.VISIBLE else View.GONE
   }
 
   override fun getDevice(model: PairedDeviceModel) {

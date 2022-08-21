@@ -59,13 +59,10 @@ class PinterDelegate(
   }
 
   private fun getConfigLabel(): String {
-    SGD.SET("device.language", "zpl,", connection)
-    // val itemNum = "PO 509038"
-    // val itemDescription =
-    //   "Motor- 10hp/1750 rpm/TEFC/254T Frame/ 440v /3ph/60hz"
+    SGD.SET("device.language", "zpl", connection)
     return """
       ^XA
-      ^FX^CF0,20^PW400^LL300 
+      ^FX^CF0,20^PW400^LL300
       ^FS^FO0,50^FB400,1,0,C^FD#$itemNum
       ^FS^FO0,90^FB400,5,,,C^FD$description
       ^FS^FO0,150^FB400,1,0,C^GB420,1,1
@@ -77,7 +74,6 @@ class PinterDelegate(
   private fun disconnect() {
     try {
       connection.close()
-      setStatus("Not Connected.")
     } catch (e: ConnectionException) {
       setStatus("COMM Error! Disconnected")
     } finally {
